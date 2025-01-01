@@ -1,4 +1,4 @@
-package com.example;
+package com.example.oblig1;
 public class Billet {
     private int id;
     private String film;

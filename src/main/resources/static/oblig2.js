@@ -1,47 +1,62 @@
 function kjopbillet() {
-
     let feilteller = 0;
-    let innFilm = $("#film").val();
-    if ((innFilm === "") || (innFilm === "Velg film her")) {
+
+    // Validate film selection
+    const innFilm = $("#film").val();
+    if (!innFilm || innFilm === "Velg film her") {
         feilteller++;
-        $("#div1").html("velg en film");
+        $("#div1").text("Velg en film").css("color", "red");
+    } else {
+        $("#div1").text("");
     }
 
-    let innAntall = $("#antall").val();
-    if ((innAntall === 0) || (innAntall === "")) {
+    // Validate number of tickets
+    const innAntall = $("#antall").val();
+    if (!innAntall || innAntall <= 0) {
         feilteller++;
-        let ut = "Skriv inn antall billett";
-        $("#div2").html(ut).css("color", "red");
+        $("#div2").text("Oppgi et gyldig antall").css("color", "red");
+    } else {
+        $("#div2").text("");
     }
 
-    let innFornavn = $("#fornavn").val();
-    if (innFornavn === "") {
+    // Validate first name
+    const innFornavn = $("#fornavn").val();
+    if (!innFornavn.trim()) {
         feilteller++;
-        let ut = "Skriv inn fornavn";
-        $("#div3").html(ut).css("color", "red");
+        $("#div3").text("Oppgi fornavn").css("color", "red");
+    } else {
+        $("#div3").text("");
     }
 
-    let innEtternavn = $("#etternavn").val();
-    if (innEtternavn === "") {
+    // Validate last name
+    const innEtternavn = $("#etternavn").val();
+    if (!innEtternavn.trim()) {
         feilteller++;
-        let ut = "Skriv inn eternavn";
-        $("#div4").html(ut).css("color", "red");
+        $("#div4").text("Oppgi etternavn").css("color", "red");
+    } else {
+        $("#div4").text("");
     }
 
-    let innTelefon = $("#telefon").val();
-    if (innTelefon === "") {
+    // Validate phone
+    const innTelefon = $("#telefon").val();
+    if (!/^\d+$/.test(innTelefon) || innTelefon.length < 8) {
         feilteller++;
-        let ut = "Skriv inn telefonnummer";
-        $("#div5").html(ut).css("color", "red");
+        $("#div5").text("Oppgi et gyldig telefonnummer").css("color", "red");
+    } else {
+        $("#div5").text("");
     }
 
-    let innEpost= $("#epost").val();
-    if (innEpost === "") {
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const innEpost = $("#epost").val();
+    if (!emailRegex.test(innEpost)) {
         feilteller++;
-        let ut = "Skriv inn epost";
-        $("#div6").html(ut).css("color", "red");
+        $("#div6").text("Ugyldig e-postadresse").css("color", "red");
+    } else {
+        $("#div6").text("");
     }
 
+    // Submit if no errors
     if (feilteller === 0) {
         const billett = {
             film: innFilm,
@@ -49,44 +64,59 @@ function kjopbillet() {
             fornavn: innFornavn,
             etternavn: innEtternavn,
             telefon: innTelefon,
-            epost:innEpost
+            epost: innEpost
         };
 
-        $.post("/lagre", billett, function () {
-            hentAlle();
-            });
-        sletter();
+        $.ajax({
+            url: "/lagre",
+            type: "POST",
+            contentType: "application/json", // Specify the correct content type
+            data: JSON.stringify(billett),   // Convert the JavaScript object to JSON
+            success: function () {
+                hentAlle(); // Refresh the table
+            },
+            error: function (xhr, status, error) {
+                console.error("Error saving the ticket:", xhr.responseText || error);
+            }
+        });
+
+
+        sletter(); // Reset form
     }
-
-
 }
 
 function hentAlle() {
     $.get("/hentAlle", function (data) {
-        formater(data)
+        formater(data);
     });
 }
 
 function formater(billetter) {
-
-    let ut = "<table class='table table-striped mt-4'><tr><th>Filmnavn</th><th>Antall</th><th>Navn</th><th>Etternavn</th>" +
-        "<th>Telefon</th><th>Epost</th></tr>";
-
-
+    let ut = `<table class="table table-striped mt-4">
+                <thead>
+                    <tr>
+                        <th>Filmnavn</th><th>Antall</th><th>Navn</th><th>Etternavn</th>
+                        <th>Telefon</th><th>E-post</th>
+                    </tr>
+                </thead>
+                <tbody>`;
     for (let b of billetter) {
-        ut += "<tr><td>" + b.film + "</td><td>" + b.antall + "</td><td>" + b.fornavn + "</td><td>" + b.etternavn +
-            "</td><td>" + b.telefon + "</td><td>" + b.epost + "</td></tr>"
+        ut += `<tr>
+                   <td>${b.film}</td><td>${b.antall}</td><td>${b.fornavn}</td>
+                   <td>${b.etternavn}</td><td>${b.telefon}</td><td>${b.epost}</td>
+               </tr>`;
     }
-    ut += "</table>"
-    $("#skriv").html(ut)
+    ut += `</tbody></table>`;
+    $("#skriv").html(ut);
 }
+
 function sletter() {
-    $("#film").val("Velg en film")
-    $("#antall").val("")
-    $("#fornavn").val("")
-    $("#etternavn").val("")
-    $("#telefon").val("")
-    $("#epost").val("")
+    $("#film").val("Velg film her");
+    $("#antall").val("");
+    $("#fornavn").val("");
+    $("#etternavn").val("");
+    $("#telefon").val("");
+    $("#epost").val("");
 }
 
 function slettAlle() {
@@ -94,4 +124,3 @@ function slettAlle() {
         hentAlle();
     });
 }
-
