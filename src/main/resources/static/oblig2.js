@@ -39,7 +39,7 @@ function kjopbillet() {
 
     // Validate phone
     const innTelefon = $("#telefon").val();
-    if (!/^\d+$/.test(innTelefon) || innTelefon.length < 8) {
+    if (!/^\+?\d{8,15}$/.test(innTelefon) || innTelefon.length < 8) {
         feilteller++;
         $("#div5").text("Oppgi et gyldig telefonnummer").css("color", "red");
     } else {
@@ -47,7 +47,7 @@ function kjopbillet() {
     }
 
     // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const innEpost = $("#epost").val();
     if (!emailRegex.test(innEpost)) {
         feilteller++;

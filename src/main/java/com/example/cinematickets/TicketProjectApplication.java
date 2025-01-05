@@ -1,4 +1,4 @@
-package com.example.oblig1;
+package com.example.cinematickets;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

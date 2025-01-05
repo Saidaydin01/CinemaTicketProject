@@ -1,4 +1,4 @@
-package com.example.oblig1;
+package com.example.cinematickets;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +31,11 @@ public class BilletController {
         if (billett.getEtternavn() == null || billett.getEtternavn().isEmpty()) {
             return ResponseEntity.badRequest().body("Etternavn må oppgis.");
         }
-        if (billett.getTelefon() == null || billett.getTelefon().matches("\\\\d{8,}")) {
+        if (billett.getTelefon() == null || !billett.getTelefon().matches("\\+?\\d{8,}")) {
             return ResponseEntity.badRequest().body("Ugyldig telefonnummer.");
         }
-        if (billett.getEpost() == null || billett.getEpost().matches("^[^\\\\s@]+@[^\\\\s@]+\\\\.[^\\\\s@]+$")) {
+        if (billett.getEpost() == null || !billett.getEpost().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+        )) {
             return ResponseEntity.badRequest().body("Ugyldig epostadresse.");
         }
 

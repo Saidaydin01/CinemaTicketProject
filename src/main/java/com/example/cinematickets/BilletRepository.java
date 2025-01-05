@@ -1,4 +1,4 @@
-package com.example.oblig1;
+package com.example.cinematickets;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
